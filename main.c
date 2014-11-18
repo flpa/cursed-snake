@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <time.h>
 #include <ncurses.h>
+/* for usleep */
+#include <unistd.h>
 
 const int FIELD_SIZE = 20;
 
@@ -19,7 +21,7 @@ main()
 	char field[FIELD_SIZE][FIELD_SIZE];
 	int x = rand() % FIELD_SIZE;
 	int y = rand() % FIELD_SIZE;
-	
+
 	int i, j;
 	for (i = 0; i < FIELD_SIZE; i++) {
 		for (j = 0; j < FIELD_SIZE; j++) {
@@ -31,13 +33,18 @@ main()
 		}
 	}
 
-	initscr(); /* Init ncurses */
+	WINDOW *window = initscr(); /* Init ncurses */
 	char input;
 	bool running = true;
+	nodelay(window, true);
 
 	do {
 		print_field(field);
+		usleep(1000 * 500);
 		input = getch();
+		if (input != ERR) {
+			printw("%c", input);
+		}
 
 		int new_x = -1;
 		int new_y = -1;
@@ -56,26 +63,26 @@ main()
 			break;
 		}
 
-	/*	if (new_x >= 0 && new_x < FIELD_SIZE
-		    && new_y >= 0 && new_y < FIELD_SIZE) {
-			char target = game.field[new_y][new_x];
-			switch (target) {
-			case '$':
-				game.score++;
-			case '.':
-				game.movement--;
-				game.field[new_y][new_x] = 'T';
-				game.field[game.hero_y][game.hero_x] = '.';
-				game.hero_x = new_x;
-				game.hero_y = new_y;
-				break;
-			}
+		/*	if (new_x >= 0 && new_x < FIELD_SIZE
+			    && new_y >= 0 && new_y < FIELD_SIZE) {
+				char target = game.field[new_y][new_x];
+				switch (target) {
+				case '$':
+					game.score++;
+				case '.':
+					game.movement--;
+					game.field[new_y][new_x] = 'T';
+					game.field[game.hero_y][game.hero_x] = '.';
+					game.hero_x = new_x;
+					game.hero_y = new_y;
+					break;
+				}
 
-		}
-	*/
+			}
+		*/
 
 		clear();
-		swap(&field[y][x], &field[y][x+1]);
+		swap(&field[y][x], &field[y][x + 1]);
 		x++;
 	} while (running);
 
@@ -85,7 +92,7 @@ main()
 }
 
 void
-swap(char *pc1, char *pc2) 
+swap(char *pc1, char *pc2)
 {
 	char t = *pc1;
 	*pc1 = *pc2;
