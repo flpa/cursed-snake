@@ -37,26 +37,31 @@ main()
 	char input;
 	bool running = true;
 	nodelay(window, true);
+	char direction;
 
 	do {
 		print_field(field);
 		usleep(1000 * 500);
 		input = getch();
 		if (input != ERR) {
-			printw("%c", input);
+			direction = input;
 		}
 
-		int new_x = -1;
-		int new_y = -1;
+		int new_x = x;
+		int new_y = y;
 
-		switch (input) {
+		switch (direction) {
 		case 'h':
+			new_x--;
 			break;
 		case 'j':
+			new_y++;
 			break;
 		case 'k':
+			new_y--;
 			break;
 		case 'l':
+			new_x++;
 			break;
 		case 'q':
 			running = false;
@@ -82,8 +87,9 @@ main()
 		*/
 
 		clear();
-		swap(&field[y][x], &field[y][x + 1]);
-		x++;
+		swap(&field[y][x], &field[new_y][new_x]);
+		x = new_x;
+		y = new_y;
 	} while (running);
 
 	endwin();
