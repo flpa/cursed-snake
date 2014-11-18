@@ -6,15 +6,7 @@
 
 const int FIELD_SIZE = 20;
 
-/* model */
-typedef struct {
-	char field[FIELD_SIZE][FIELD_SIZE];
-	int hero_x, hero_y, movement, score;
-} GameData;
-
-/* prototypes */
-GameData  init_game();
-void      print_field(GameData game);
+void      print_field(char field[FIELD_SIZE][FIELD_SIZE]);
 char      get_char(bool hero_has_spawned);
 
 int
@@ -23,14 +15,27 @@ main()
 	/* Initialize seed for rand() */
 	srand(time(NULL));
 
-	GameData game = init_game();
+	char field[FIELD_SIZE][FIELD_SIZE];
+	int x = rand() % FIELD_SIZE;
+	int y = rand() % FIELD_SIZE;
+	
+	int i, j;
+	for (i = 0; i < FIELD_SIZE; i++) {
+		for (j = 0; j < FIELD_SIZE; j++) {
+			if (i == y && j == x) {
+				field[i][j] = 's';
+			} else {
+				field[i][j] = '.';
+			}
+		}
+	}
 
 	initscr(); /* Init ncurses */
 	char input;
 	bool running = true;
 
 	do {
-		print_field(game);
+		print_field(field);
 		input = getch();
 
 		int new_x = -1;
@@ -38,33 +43,24 @@ main()
 
 		switch (input) {
 		case 'h':
-			new_x = game.hero_x - 1;
-			new_y = game.hero_y;
 			break;
 		case 'j':
-			new_y = game.hero_y + 1;
-			new_x = game.hero_x;
 			break;
 		case 'k':
-			new_y = game.hero_y - 1;
-			new_x = game.hero_x;
 			break;
 		case 'l':
-			new_y = game.hero_y;
-			new_x = game.hero_x + 1;
 			break;
 		case 'q':
 			running = false;
 			break;
 		}
 
-		if (new_x >= 0 && new_x < FIELD_SIZE
+	/*	if (new_x >= 0 && new_x < FIELD_SIZE
 		    && new_y >= 0 && new_y < FIELD_SIZE) {
 			char target = game.field[new_y][new_x];
 			switch (target) {
 			case '$':
 				game.score++;
-			/* FALLTHROUGH */
 			case '.':
 				game.movement--;
 				game.field[new_y][new_x] = 'T';
@@ -76,14 +72,15 @@ main()
 
 			clear();
 		}
-	} while (running && game.movement > 0);
+	*/
+	} while (running);
 
 	endwin();
 
 	return EXIT_SUCCESS;
 }
 
-GameData
+/*GameData
 init_game()
 {
 	GameData game;
@@ -102,19 +99,18 @@ init_game()
 	}
 
 	return game;
-}
+}*/
 
 void
-print_field(GameData game)
+print_field(char field[FIELD_SIZE][FIELD_SIZE])
 {
 	int i, j;
 	for (i = 0; i < FIELD_SIZE; i++) {
 		for (j = 0; j < FIELD_SIZE; j++) {
-			printw("%c", game.field[i][j]);
+			printw("%c", field[i][j]);
 		}
 
 		printw("\n");
 	}
-	printw("Move: %d\nScore: %d", game.movement, game.score);
 	refresh();  /* trigger ncurses printing to screen */
 }
