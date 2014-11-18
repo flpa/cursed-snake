@@ -8,6 +8,7 @@ const int FIELD_SIZE = 20;
 
 void      print_field(char field[FIELD_SIZE][FIELD_SIZE]);
 char      get_char(bool hero_has_spawned);
+void	  swap(char *pc1, char *pc2);
 
 int
 main()
@@ -70,14 +71,25 @@ main()
 				break;
 			}
 
-			clear();
 		}
 	*/
+
+		clear();
+		swap(&field[y][x], &field[y][x+1]);
+		x++;
 	} while (running);
 
 	endwin();
 
 	return EXIT_SUCCESS;
+}
+
+void
+swap(char *pc1, char *pc2) 
+{
+	char t = *pc1;
+	*pc1 = *pc2;
+	*pc2 = t;
 }
 
 /*GameData
