@@ -12,6 +12,8 @@ void    print_field(char field[FIELD_SIZE][FIELD_SIZE]);
 char    get_char(bool hero_has_spawned);
 void	swap(char *pc1, char *pc2);
 bool	is_one_of(char c, const char *options);
+bool is_outside(int coord);
+
 
 int
 main()
@@ -70,6 +72,11 @@ main()
 		}
 
 		clear();
+		if (is_outside(new_x) || is_outside(new_x)
+		    || field[new_y][new_x] == 's') {
+			printw("busted");
+			break;
+		}
 		swap(&field[y][x], &field[new_y][new_x]);
 		x = new_x;
 		y = new_y;
@@ -111,4 +118,10 @@ is_one_of(char c, const char *options)
 		}
 	}
 	return false;
+}
+
+bool
+is_outside(int coord)
+{
+	return coord < 0 || coord >= FIELD_SIZE;
 }
