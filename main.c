@@ -8,17 +8,20 @@
 
 const int FIELD_SIZE = 20;
 
-typedef struct point {
+typedef struct node {
 	int x, y;
-} Point;
+	struct node *next;
+} Node;
 
-void     print_field(char field[FIELD_SIZE][FIELD_SIZE]);
-char     get_char(bool hero_has_spawned);
-void	 swap(char *pc1, char *pc2);
+void  	 lst_append(Node **head, int x, int y);
+bool	 lst_contains(Node *head, int x, int y);
+void  	 lst_free(Node *head);
+void  	 free_node(Node *node);
+
+void     print_field(Node *head, int, int);
 bool	 is_one_of(char c, const char *options);
 bool 	 is_outside(int coord);
 void 	 random_point(int *x, int *y);
-
 
 int
 main()
@@ -26,39 +29,30 @@ main()
 	/* Initialize seed for rand() */
 	srand(time(NULL));
 
-	char field[FIELD_SIZE][FIELD_SIZE];
 
 	int x = 0;
 	int y = 0;
 	random_point(&x, &y);
 
-	int i, j;
-	for (i = 0; i < FIELD_SIZE; i++) {
-		for (j = 0; j < FIELD_SIZE; j++) {
-			if (i == y && j == x) {
-				field[i][j] = 'S';
-			} else {
-				field[i][j] = '.';
-			}
-		}
-	}
+	Node *head = NULL;
+	lst_append(&head, x, y);
 
 	WINDOW *window = initscr(); /* Init ncurses */
 	char input;
 	bool running = true;
 	nodelay(window, true);
 	char direction;
-	bool spawn_food = true;
+	int len_cur = 1;
+	int len_max = 3;
+
+	int food_x = -1;
+	int food_y = -1;
 
 	do {
-		if(spawn_food) {
-			int food_x = 0;
-			int food_y = 0;
+		if (food_x < 0) {
 			random_point(&food_x, &food_y);
-			field[food_y][food_x] = 'x';
-			spawn_food = false;
 		}
-		print_field(field);
+		print_field(head, food_x, food_y);
 		usleep(1000 * 500);
 		input = getch();
 		if (input != ERR && is_one_of(input, "hjklq")) {
@@ -88,11 +82,10 @@ main()
 
 		clear();
 		if (is_outside(new_x) || is_outside(new_x)
-		    || field[new_y][new_x] == 's') {
+		    || lst_contains(head, new_x, new_y)) {
 			printw("busted");
 			break;
 		}
-		swap(&field[y][x], &field[new_y][new_x]);
 		x = new_x;
 		y = new_y;
 	} while (running);
@@ -103,17 +96,20 @@ main()
 }
 
 void
-swap(char *pc1, char *pc2)
+print_field(Node *head, int food_x, int food_y)
 {
-	char t = *pc1;
-	*pc1 = *pc2;
-	*pc2 = t;
-}
-
-void
-print_field(char field[FIELD_SIZE][FIELD_SIZE])
-{
+	char field[FIELD_SIZE][FIELD_SIZE];
 	int i, j;
+
+	for (i = 0; i < FIELD_SIZE; i++) {
+		for (j = 0; j < FIELD_SIZE; j++) {
+			field[i][j] = '.';
+		}
+	}
+
+	field[food_y][food_x] = 'x';
+
+
 	for (i = 0; i < FIELD_SIZE; i++) {
 		for (j = 0; j < FIELD_SIZE; j++) {
 			printw("%c", field[i][j]);
@@ -146,4 +142,45 @@ random_point(int *x, int *y)
 {
 	*x = rand() % FIELD_SIZE;
 	*y = rand() % FIELD_SIZE;
+}
+
+/* simplify pointers = possible ? */
+void
+lst_append(Node **head, int x, int y)
+{
+	if (NULL == *head) {
+		*head = malloc(sizeof(Node));
+		(*head)->x = x;
+		(*head)->y = y;
+		(*head)->next = NULL;
+	} else {
+		lst_append(&((*head)->next), x, y);
+	}
+}
+
+bool
+lst_contains(Node *head, int x, int y)
+{
+	if (NULL == head) {
+		return false;
+	}
+	if (head->x == x && head->y == y) {
+		return true;
+	}
+	return lst_contains(head->next, x, y);
+}
+
+void
+lst_free(Node *head)
+{
+	if (NULL != head) {
+		lst_free(head->next);
+		free_node(head);
+	}
+}
+
+void
+free_node(Node *node)
+{
+	free(node);
 }
