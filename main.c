@@ -17,7 +17,6 @@ void  	 lst_append(Node **head, int x, int y);
 bool	 lst_contains(Node *head, int x, int y);
 void  	 lst_free(Node *head);
 int	 lst_length(Node *head);
-void  	 free_node(Node *node);
 
 void     print_field(Node *head, int, int);
 void	 mark_node(Node *head, char *f);
@@ -31,9 +30,7 @@ main()
 	/* Initialize seed for rand() */
 	srand(time(NULL));
 
-
-	int x = 0;
-	int y = 0;
+	int x, y;
 	random_point(&x, &y);
 
 	Node *head = NULL;
@@ -89,7 +86,7 @@ main()
 			break;
 		}
 
-		if(new_x == food_x && new_y == food_y) {
+		if (new_x == food_x && new_y == food_y) {
 			len++;
 			food_x = -1;
 			food_y = -1;
@@ -106,6 +103,7 @@ main()
 		x = new_x;
 		y = new_y;
 	} while (running);
+	lst_free(head);
 
 	endwin();
 
@@ -193,7 +191,7 @@ lst_free(Node *head)
 {
 	if (NULL != head) {
 		lst_free(head->next);
-		free_node(head);
+		free(head);
 	}
 }
 
@@ -201,22 +199,16 @@ int
 lst_length(Node *head)
 {
 	int len;
-	for(len = 0; head != NULL; head = head->next) {
+	for (len = 0; head != NULL; head = head->next) {
 		len++;
 	}
 	return len;
 }
 
 void
-free_node(Node *node)
-{
-	free(node);
-}
-
-void
 mark_node(Node *head, char *f)
 {
-	char *p = f + head->y*FIELD_SIZE + head->x;
+	char *p = f + head->y * FIELD_SIZE + head->x;
 	if (NULL == head->next) {
 		*p = 'S';
 	} else {
