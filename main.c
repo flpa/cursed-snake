@@ -58,21 +58,18 @@ main()
 			direction = input;
 		}
 
-		int new_x = x;
-		int new_y = y;
-
 		switch (direction) {
 		case 'h':
-			new_x--;
+			x--;
 			break;
 		case 'j':
-			new_y++;
+			y++;
 			break;
 		case 'k':
-			new_y--;
+			y--;
 			break;
 		case 'l':
-			new_x++;
+			x++;
 			break;
 		case 'q':
 			running = false;
@@ -80,28 +77,25 @@ main()
 		}
 
 		clear();
-		if (is_outside(new_x) || is_outside(new_y)
-		    || lst_contains(head, new_x, new_y)) {
+		if (is_outside(x) || is_outside(y)
+		    || lst_contains(head, x, y)) {
 			printf("busted");
 			break;
 		}
 
-		if (new_x == food_x && new_y == food_y) {
+		if (x == food_x && y == food_y) {
 			len++;
 			food_x = -1;
 			food_y = -1;
 			sleep_time -= 20;
 		}
 
-		lst_append(&head, new_x, new_y);
+		lst_append(&head, x, y);
 		if (lst_length(head) == len) {
 			Node *old_head = head;
 			head = head->next;
 			free(old_head);
 		}
-
-		x = new_x;
-		y = new_y;
 	} while (running);
 	lst_free(head);
 
