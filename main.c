@@ -16,9 +16,11 @@ typedef struct node {
 void  	 lst_append(Node **head, int x, int y);
 bool	 lst_contains(Node *head, int x, int y);
 void  	 lst_free(Node *head);
+int	 lst_length(Node *head);
 void  	 free_node(Node *node);
 
 void     print_field(Node *head, int, int);
+void	 mark_node(Node *head, char *f);
 bool	 is_one_of(char c, const char *options);
 bool 	 is_outside(int coord);
 void 	 random_point(int *x, int *y);
@@ -41,19 +43,19 @@ main()
 	char input;
 	bool running = true;
 	nodelay(window, true);
-	char direction;
-	int len_cur = 1;
-	int len_max = 3;
+	char direction = 'h';
+	int len = 3;
 
 	int food_x = -1;
 	int food_y = -1;
+	int sleep_time = 300;
 
 	do {
 		if (food_x < 0) {
 			random_point(&food_x, &food_y);
 		}
 		print_field(head, food_x, food_y);
-		usleep(1000 * 500);
+		usleep(1000 * sleep_time);
 		input = getch();
 		if (input != ERR && is_one_of(input, "hjklq")) {
 			direction = input;
@@ -81,11 +83,26 @@ main()
 		}
 
 		clear();
-		if (is_outside(new_x) || is_outside(new_x)
+		if (is_outside(new_x) || is_outside(new_y)
 		    || lst_contains(head, new_x, new_y)) {
-			printw("busted");
+			printf("busted");
 			break;
 		}
+
+		if(new_x == food_x && new_y == food_y) {
+			len++;
+			food_x = -1;
+			food_y = -1;
+			sleep_time -= 20;
+		}
+
+		lst_append(&head, new_x, new_y);
+		if (lst_length(head) == len) {
+			Node *old_head = head;
+			head = head->next;
+			free(old_head);
+		}
+
 		x = new_x;
 		y = new_y;
 	} while (running);
@@ -109,6 +126,7 @@ print_field(Node *head, int food_x, int food_y)
 
 	field[food_y][food_x] = 'x';
 
+	mark_node(head, field[0]);
 
 	for (i = 0; i < FIELD_SIZE; i++) {
 		for (j = 0; j < FIELD_SIZE; j++) {
@@ -179,8 +197,30 @@ lst_free(Node *head)
 	}
 }
 
+int
+lst_length(Node *head)
+{
+	int len;
+	for(len = 0; head != NULL; head = head->next) {
+		len++;
+	}
+	return len;
+}
+
 void
 free_node(Node *node)
 {
 	free(node);
+}
+
+void
+mark_node(Node *head, char *f)
+{
+	char *p = f + head->y*FIELD_SIZE + head->x;
+	if (NULL == head->next) {
+		*p = 'S';
+	} else {
+		*p = 's';
+		mark_node(head->next, f);
+	}
 }
