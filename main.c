@@ -8,11 +8,16 @@
 
 const int FIELD_SIZE = 20;
 
-void    print_field(char field[FIELD_SIZE][FIELD_SIZE]);
-char    get_char(bool hero_has_spawned);
-void	swap(char *pc1, char *pc2);
-bool	is_one_of(char c, const char *options);
-bool is_outside(int coord);
+typedef struct point {
+	int x, y;
+} Point;
+
+void     print_field(char field[FIELD_SIZE][FIELD_SIZE]);
+char     get_char(bool hero_has_spawned);
+void	 swap(char *pc1, char *pc2);
+bool	 is_one_of(char c, const char *options);
+bool 	 is_outside(int coord);
+void 	 random_point(int *x, int *y);
 
 
 int
@@ -22,8 +27,10 @@ main()
 	srand(time(NULL));
 
 	char field[FIELD_SIZE][FIELD_SIZE];
-	int x = rand() % FIELD_SIZE;
-	int y = rand() % FIELD_SIZE;
+
+	int x = 0;
+	int y = 0;
+	random_point(&x, &y);
 
 	int i, j;
 	for (i = 0; i < FIELD_SIZE; i++) {
@@ -41,8 +48,16 @@ main()
 	bool running = true;
 	nodelay(window, true);
 	char direction;
+	bool spawn_food = true;
 
 	do {
+		if(spawn_food) {
+			int food_x = 0;
+			int food_y = 0;
+			random_point(&food_x, &food_y);
+			field[food_y][food_x] = 'x';
+			spawn_food = false;
+		}
 		print_field(field);
 		usleep(1000 * 500);
 		input = getch();
@@ -124,4 +139,11 @@ bool
 is_outside(int coord)
 {
 	return coord < 0 || coord >= FIELD_SIZE;
+}
+
+void
+random_point(int *x, int *y)
+{
+	*x = rand() % FIELD_SIZE;
+	*y = rand() % FIELD_SIZE;
 }
