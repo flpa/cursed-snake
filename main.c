@@ -8,9 +8,10 @@
 
 const int FIELD_SIZE = 20;
 
-void      print_field(char field[FIELD_SIZE][FIELD_SIZE]);
-char      get_char(bool hero_has_spawned);
-void	  swap(char *pc1, char *pc2);
+void    print_field(char field[FIELD_SIZE][FIELD_SIZE]);
+char    get_char(bool hero_has_spawned);
+void	swap(char *pc1, char *pc2);
+bool	is_one_of(char c, const char *options);
 
 int
 main()
@@ -26,7 +27,7 @@ main()
 	for (i = 0; i < FIELD_SIZE; i++) {
 		for (j = 0; j < FIELD_SIZE; j++) {
 			if (i == y && j == x) {
-				field[i][j] = 's';
+				field[i][j] = 'S';
 			} else {
 				field[i][j] = '.';
 			}
@@ -43,7 +44,7 @@ main()
 		print_field(field);
 		usleep(1000 * 500);
 		input = getch();
-		if (input != ERR) {
+		if (input != ERR && is_one_of(input, "hjklq")) {
 			direction = input;
 		}
 
@@ -138,4 +139,14 @@ print_field(char field[FIELD_SIZE][FIELD_SIZE])
 		printw("\n");
 	}
 	refresh();  /* trigger ncurses printing to screen */
+}
+bool
+is_one_of(char c, const char *options)
+{
+	for (; *options != '\0'; options++) {
+		if (c == *options) {
+			return true;
+		}
+	}
+	return false;
 }
