@@ -69,24 +69,6 @@ main()
 			break;
 		}
 
-		/*	if (new_x >= 0 && new_x < FIELD_SIZE
-			    && new_y >= 0 && new_y < FIELD_SIZE) {
-				char target = game.field[new_y][new_x];
-				switch (target) {
-				case '$':
-					game.score++;
-				case '.':
-					game.movement--;
-					game.field[new_y][new_x] = 'T';
-					game.field[game.hero_y][game.hero_x] = '.';
-					game.hero_x = new_x;
-					game.hero_y = new_y;
-					break;
-				}
-
-			}
-		*/
-
 		clear();
 		swap(&field[y][x], &field[new_y][new_x]);
 		x = new_x;
@@ -106,27 +88,6 @@ swap(char *pc1, char *pc2)
 	*pc2 = t;
 }
 
-/*GameData
-init_game()
-{
-	GameData game;
-	int right_border = FIELD_SIZE - 1;
-
-	int i, j;
-	for (i = 0; i < FIELD_SIZE; i++) {
-		for (j = 0; j < FIELD_SIZE; j++) {
-			if (i == 0 || i == right_border ||
-			    j == 0 || j == right_border) {
-				game.field[i][j] = '%';
-			} else {
-				game.field[i][j] = get_char(hero_has_spawned);
-			}
-		}
-	}
-
-	return game;
-}*/
-
 void
 print_field(char field[FIELD_SIZE][FIELD_SIZE])
 {
@@ -140,6 +101,7 @@ print_field(char field[FIELD_SIZE][FIELD_SIZE])
 	}
 	refresh();  /* trigger ncurses printing to screen */
 }
+
 bool
 is_one_of(char c, const char *options)
 {
