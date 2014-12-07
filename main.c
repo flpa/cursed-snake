@@ -159,7 +159,7 @@ void
 lst_append(Node **head, int x, int y)
 {
 	if (NULL == *head) {
-		*head = malloc(sizeof(*head));
+		*head = malloc(sizeof(**head));
 		(*head)->x = x;
 		(*head)->y = y;
 		(*head)->next = NULL;
